@@ -1,113 +1,67 @@
 @charset "utf-8";
 
 body {
-	background-color: #ffffff;
+	background-image: url(img/021_ohoshisama.png);
+	background-attachment: fixed;
+  background-color: #f2f8fa;
+}
+
+h1 {
+  font-family: "ＭＳ Ｐ明朝";
+  font-size: 44px;
+  text-align: center;
+  font-weight:bold;
+  color: #17baf6;
+}
+
+h2 {
+  font-family: "ＭＳ Ｐ明朝";
+  font-size: 16px;
+  text-align: center;
 }
 
 
-ul {
-	list-style:none;
+
+input[type="text"] {
+  font-size: 14px;
+  width: 500px;
+  height: 22px;
+  padding: 5px;
+  margin: 0 auto;
+  margin: 8px;
 }
 
-.title {
-	display: block;
-  margin-left: auto;
-  margin-right: auto;
+textarea {
+  font-size: 14px;
+  width: 500px;
+  height: 200px;
+  padding: 5px;
+  margin: 8px;
 }
 
-hr {
-	background-image: url("img/hrBorder.png");
-	width: 877px;
-	height: 25px;
-	border: 0px;
+input[type="submit"] {
+  font-size: 14px;
+  font-weight:bold;
+  height: 36px;
+  width: 100px;
+  margin: 8px;
 }
 
 
-.box{
-	width: 1120px;
-	height: 580px;
-}
-
-.form {
-	border: solid 62px;
-	border-image: url("img/messageForm.png") 62 62 stretch;
-	float: left;
-	width: 548px;
-	height: 343px;
-}
-
-.formBorder {
+.writeNumber {
+  font-size: 14px;
 }
 
 .name {
-	font-size: 32px;
-	font-weight: bold;
-	resize: none;
-	border: 0px;
+  font-size: 16px;
+  font-weight:bold;
+  color: #17baf6;
 }
 
-.message{
-	font-size: 32px;
-	font-weight: bold;
-	width: 548px;
-	height: 240px;
-	resize: none;
-	border: 0px;
+.writeDate {
+  font-size: 12px;
 }
 
-.button{
-	margin-top: 320px;
-	float: right;
-}
-
-.radioBorder {
-	background-image: url("img/characterBorder.png");
-	width: 407px;
-	height: 111px;
-	padding: 20px;
-}
-
-.radio {
-	display: none;
-}
-
-.radio:checked + .radio_image {
-	background-color: #ffeeee;
-}
-
-.send {
-	margin-left: 250px;
-	margin-bottom: 20px;
-	font-size: 26px;
-	font-weight: bold;
-	width: 149px;
-	height: 74px;
-	background: url("img/sendButton.png");
- 	border: 0px;
-	padding: 10px;
-}
-
-.send:hover{
-  cursor: pointer;
-}
-
-.display {
-	font-size: 18px;
-	font-weight: bold;
-
-	border: solid 51px;
-	border-image: url("img/messageDisplay.png") 51 51 round;
-	float: left;
-	width: 434px;
-	height: 129px;
-}
-
-.displayImg {
-	margin-top: 120px;
-	float: left;
-}
-
-.displayName {
-	font-size: 22px;
-	float: right;
+.message {
+  font-size: 14px;
 }
