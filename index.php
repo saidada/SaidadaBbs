@@ -1,15 +1,17 @@
 <?php
+//TODO: 書き込み件数が増えたらこまるので、その辺りを作る
+//TODO: Smarty などの、テンプレートエンジンで プログラムのファイルを分割
 
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
+$logFile = "log.tsv";
 
 // CSFR
 session_start();
 
 function setToken() {
-  $token = sha1(uniqid(mt_rand(), true));
-  $_SESSION['token'] = $token;
+  $_SESSION['token'] = sha1(uniqid(mt_rand(), true));
 }
 
 function checkToken() {
@@ -19,7 +21,11 @@ function checkToken() {
   }
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) && isset($_POST['message'])) { // isset :変数がセットされて、かつNULLではない場合に TRUE
+$log = file($logFile);
+
+$posting = $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) && isset($_POST['message']);
+
+if ($posting) { // isset :変数がセットされて、かつNULLではない場合に TRUE
 
   checkToken();
 
@@ -30,20 +36,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) && isset($_POS
     $name = "名無しサイダー";
   }
 
-  $logFile = "log.tsv";
   $fileData = fopen($logFile, "ab");
-
-  $count = count(file($logFile)) + 1;
 
   if ($fileData) { // ファイルを開くのに成功していたら
     flock($fileData, LOCK_EX); // 書き込みロック
     if ($message) {
-
+      // 書き込む内容を準備する
+      $count = count($log) + 1;
       $name = str_replace("\t", ' ', $name); //tab回避
+      $name =   htmlspecialchars($name, ENT_QUOTES, 'UTF-8', false);//<tag>など変換
+      $name = str_replace("\n", '<br>', $name);
+      $writeDate = date('Y/n/j H:i:s');
       $message = str_replace("\t", ' ', $message);
+      $message =   htmlspecialchars($message, ENT_QUOTES, 'UTF-8', false);
       $message = str_replace("\n", '<br>', $message);
 
-      $writeDate = date('Y/n/j H:i:s');
       fwrite($fileData, "No." . $count . "\t" . $name . "\t" . $writeDate . "\t" . $message . "\n");
     }
     fclose($fileData);
@@ -53,8 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) && isset($_POS
 }
 
 ?>
-
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -90,40 +95,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name']) && isset($_POS
     <table>
   </form>
 
-
-<hr>
+  <hr>
 
 <?php
-  $logFile = "log.tsv";
 
-  $display = file($logFile, FILE_IGNORE_NEW_LINES);
-  $display = array_reverse($display);
+if ($posting) {
+  $log[] = "No." . $count . "\t" . $name . "\t" . $writeDate . "\t" . $message . "\n";
+}
+$display = array_reverse($log);
 
-  foreach ($display as $post) {
-    $cols = explode("\t", $post);
+foreach ($display as $post) {
+  $cols = explode("\t", $post);
 
-    echo "<div>";
-    echo "<span class=\"writeNumber\">";
-    echo $cols[0] . " ";
-    echo "</span>";
-    echo "<span class=\"name\">";
-    echo $cols[1] . " ";
-    echo "</span>";
-    echo "<span class=\"writeDate\">";
-    echo $cols[2];
-    echo "</span>";
-    echo "</div>";
+  echo "<div>";
+  echo "<span class=\"writeNumber\">";
+  echo $cols[0] . " ";
+  echo "</span>";
+  echo "<span class=\"name\">";
+  echo $cols[1] . " ";
+  echo "</span>";
+  echo "<span class=\"writeDate\">";
+  echo $cols[2];
+  echo "</span>";
+  echo "</div>";
 
-    echo "<div>";
-    echo "<span class=\"message\">";
-    echo $cols[3];
-    echo "</span>";
-    echo "<div>";
-    echo "<hr>";
+  echo "<div>";
+  echo "<span class=\"message\">";
+  echo $cols[3];
+  echo "</span>";
+  echo "<div>";
+  echo "<hr>";
 
-  }
+}
 ?>
-
-
 </body>
 </html>
