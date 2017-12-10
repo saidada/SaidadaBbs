@@ -1,6 +1,7 @@
 <?php
 //TODO: 書き込み件数が増えたらこまるので、その辺りを作る
 //TODO: Smarty などの、テンプレートエンジンで プログラムのファイルを分割
+//TODO: 長い文章を投稿出来ないようにする
 
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
@@ -45,7 +46,7 @@ if ($posting) { // isset :変数がセットされて、かつNULLではない�
       $count = count($log) + 1;
       $name = str_replace("\t", ' ', $name); //tab回避
       $name =   htmlspecialchars($name, ENT_QUOTES, 'UTF-8', false);//<tag>など変換
-      $name = str_replace("\n", '<br>', $name);
+      $name = str_replace("\n", ' ', $name); //名前は改行出来ない様にする
       $writeDate = date('Y/n/j H:i:s');
       $message = str_replace("\t", ' ', $message);
       $message =   htmlspecialchars($message, ENT_QUOTES, 'UTF-8', false);
