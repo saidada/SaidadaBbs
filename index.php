@@ -1,7 +1,17 @@
 <?php
+
 //TODO: 書き込み件数が増えたらこまるので、その辺りを作る
-//TODO: Smarty などの、テンプレートエンジンで プログラムのファイルを分割
-//TODO: 長い文章を投稿出来ないようにする
+//  アプローチ方法をどうするのかによって方針が変わる
+//    1. データベースに書き込み内容を入れるようにする　→　結構長い間、何もしなくてもわりと重くなりにくい
+//    2. 書き込み件数上限を設けて、ログファイルを切り替える → サーバ容量が許す限り動きそうではある
+//    3. 古いのは消す　→　昭和っぽい対応ではあるが、想定通りに動きそうではある
+
+// TODO: class を使ってプログラムを整理する
+//          エラー表示用
+
+// TODO: Smarty などの、テンプレートエンジンで プログラムのファイルを分割
+//       現実問題としては、テンプレートエンジンはわりとフレームワークの一部になっていることが多いので、
+//       Laravel とか最近流行ってるフレームワークを使って簡単なページを作ってみるといいかもしれない
 
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
@@ -33,9 +43,23 @@ if ($posting) { // isset :変数がセットされて、かつNULLではない�
   $name = $_POST['name'];
   $message = $_POST['message'];
 
+  if(strlen($name) > 100 || strlen($message) > 1500){
+    echo "名前やメッセージが長過ぎます";
+    exit;
+  }
+
   if($_POST['name'] == ""){ // 名前を空欄を回避
     $name = "名無しサイダー";
   }
+
+if(isset($_SESSION['name']) && //順番に評価されるので注意
+   isset($_SESSION['message']) &&
+   $_SESSION['name'] == $_POST['name'] &&
+   $_SESSION['message'] == $_POST['message'])
+  {
+    echo "二重書き込みです";
+    exit;
+}
 
   $fileData = fopen($logFile, "ab");
 
@@ -55,6 +79,8 @@ if ($posting) { // isset :変数がセットされて、かつNULLではない�
       fwrite($fileData, "No." . $count . "\t" . $name . "\t" . $writeDate . "\t" . $message . "\n");
     }
     fclose($fileData);
+    $_SESSION['name'] = $_POST['name'];
+    $_SESSION['message'] = $_POST['message'];
   }
 } else {
   setToken();
@@ -72,19 +98,19 @@ if ($posting) { // isset :変数がセットされて、かつNULLではない�
   <h1>サイダダ掲示板</h1>
   <h2>こんにちは、仲良く書き込んで下さい。</h2>
   <h2>間違って書き込みしても削除できませんので、あしからず。（頑張れば出来ます）</h2>
-
+  <a href="../index.html">戻る</a>
   <hr>
 
   <form action="index.php" method="post">
     <table>
       <tr>
         <td>
-          <input type="text" name="name" placeholder="お名前">
+          <input type="text" name="name" placeholder="お名前" maxlength='100'>
         </td>
       </tr>
       <tr>
         <td>
-          <textarea name="message" placeholder="メッセージ"></textarea>
+          <textarea name="message" placeholder="メッセージ" maxlength="1024"></textarea>
         </td>
       </tr>
       <tr>
@@ -100,9 +126,10 @@ if ($posting) { // isset :変数がセットされて、かつNULLではない�
 
 <?php
 
-if ($posting) {
+if ($posting && !($message == "")) {
   $log[] = "No." . $count . "\t" . $name . "\t" . $writeDate . "\t" . $message . "\n";
 }
+
 $display = array_reverse($log);
 
 foreach ($display as $post) {
